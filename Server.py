@@ -8,7 +8,7 @@ sys.path.insert(0, "..")
 if __name__ == "__main__":
     # setup our server
     server = Server()
-    server.set_endpoint("opc.tcp://192.168.1.27:4840")
+    server.set_endpoint("opc.tcp://192.168.1.27:4844")
     # setup our own namespace, not really necessary but should as spec
     uri = "Teste Server"
     idx = server.register_namespace(uri)

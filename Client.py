@@ -21,7 +21,7 @@ import opcua
 """
 
 if __name__ == "__main__":
-    client = opcua.Client("opc.tcp://192.168.1.27:4840")
+    client = opcua.Client("opc.tcp://192.168.1.100:4844")
     try:
         # connecting!
         client.connect()

@@ -3,25 +3,13 @@
 import time
 import sys
 sys.path.insert(0, "..")
-
 import opcua
 
-"""class SubHandler(opcua.SubscriptionHandler):
-    
-   # Client to subcsription. It will receive events from server
-    
-    def __init__(self, *args):
-        opcua.SubscriptionHandler.__init__(self, *args)
 
-    def data_change(self, handle, node, val, attr):
-        print("Python: New data change event", handle, node, val, attr)
+def Start(end_ip, porta, nome):
 
-    def event(self, handle, event):
-        print("Python: New event", handle, event)
-"""
-
-if __name__ == "__main__":
-    client = opcua.Client("opc.tcp://192.168.1.100:4844")
+    print (nome)
+    client = opcua.Client("opc.tcp://" + end_ip + ":" + porta)
     try:
         # connecting!
         client.connect()
@@ -47,8 +35,8 @@ if __name__ == "__main__":
             count = myData1.get_value()
             count += 0.1
             myData1.set_value(count)
-            print("myData1 = %4.1f" %client.get_node("ns=2;i=2").get_value())
-            print("myDataDatetime = ", client.get_node("ns=2;i=3").get_value().strftime("%Y-%m-%d 	%H:%M:%S"))
+            print("Temperatura = %4.1f" %client.get_node("ns=2;i=2").get_value())
+            print("Data e hora = ", client.get_node("ns=2;i=3").get_value().strftime("%Y-%m-%d 	%H:%M:%S"))
             time.sleep(2)            
     finally:
         client.disconnect()

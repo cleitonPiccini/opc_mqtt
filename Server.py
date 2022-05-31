@@ -37,7 +37,7 @@ if __name__ == "__main__":
             count = myData1.get_value()
             if (count != old_count):
                 old_count = count
-                print("Mudou o count = %4.1f" %count)
+                print("Temperatura = %4.1f" %count)
 
             #count += 0.1
             myDataDatetime.set_value(datetime.datetime.now())

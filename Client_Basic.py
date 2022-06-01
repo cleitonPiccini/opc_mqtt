@@ -38,11 +38,13 @@ try:
     while True:
         #client.set_node("ns=2;i=2").set_value(10)
         #count = myData1.get_value()
-        count = client.get_node("ns=2;i=2").get_value()
+        count = client.get_node(myData1).get_value()
         count += 0.1
         myData1.set_value(count)
-        print("Temperatura = %4.1f" %client.get_node("ns=2;i=2").get_value())
-        print("Data e hora = ", client.get_node("ns=2;i=3").get_value().strftime("%Y-%m-%d 	%H:%M:%S"))
+        print("Temperatura = %4.1f" %client.get_node(myData1).get_value())
+        #print("Data e hora = ", client.get_node("ns=2;i=3").get_value().strftime("%Y-%m-%d 	%H:%M:%S"))
         time.sleep(2)            
 finally:
     client.disconnect()
+
+    myData1.set_value(33)

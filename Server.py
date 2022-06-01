@@ -20,14 +20,17 @@ if __name__ == "__main__":
     # setup our own namespace, not really necessary but should as spec
     uri = texto[7]
     idx = server.register_namespace(uri)
-    # get Objects node, this is where we should put our nodes
     objects = server.get_objects_node()
-    # populating our address space
+
     myobj = objects.add_object(idx, "Objeto")
     myData1 = myobj.add_variable(idx, "Variavel", 0)
     myDataDatetime = myobj.add_variable(idx, "MyDataDatetime", 0)
     myData1.set_writable()    # Set MyVariable to be writable by clients
-    myDataDatetime.set_writable()    # Set MyVariable to be writable by clients
+    myDataDatetime.set_writable()
+
+    
+    # populating our address space
+        # Set MyVariable to be writable by clients
     # starting!
     server.start()
     try:
@@ -53,3 +56,4 @@ if __name__ == "__main__":
     finally:
         #close connection, remove subcsriptions, etc
         server.stop()
+        

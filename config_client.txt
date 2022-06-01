@@ -1,6 +1,8 @@
 Número de clientes gerados:
 20
 Endereço IP do Servidor:
-192.168.1.27
+192.168.1.100
 Porta :
-4844
+4840
+Nome URI:
+Teste Servidor

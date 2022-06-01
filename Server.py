@@ -5,12 +5,20 @@ import time
 import datetime
 sys.path.insert(0, "..")
 
+
+texto = []
+
+with open("config_client.txt", "r") as arquivo:
+    for linha in arquivo:
+        #print(linha[len(linha)-1])
+        texto.append(linha)
+
 if __name__ == "__main__":
     # setup our server
     server = Server()
-    server.set_endpoint("opc.tcp://192.168.1.27:4844")
+    server.set_endpoint("opc.tcp://" + texto[3] + ":" + texto[5])
     # setup our own namespace, not really necessary but should as spec
-    uri = "Teste Server"
+    uri = texto[7]
     idx = server.register_namespace(uri)
     # get Objects node, this is where we should put our nodes
     objects = server.get_objects_node()

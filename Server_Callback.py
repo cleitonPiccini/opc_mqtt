@@ -23,7 +23,7 @@ texto = []
 with open("config_client.txt", "r") as arquivo:
     for linha in arquivo:
         #print(linha[len(linha)-1])
-        texto.append(linha)
+        texto.append(linha.replace("\n",""))
 
 
 from opcua import ua, uamethod, Server

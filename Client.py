@@ -6,7 +6,7 @@ sys.path.insert(0, "..")
 import opcua
 
 
-def Start(end_ip, porta, nome):
+def Start(end_ip, porta, servidor, nome):
 
     print (nome)
     client = opcua.Client("opc.tcp://" + end_ip + ":" + porta)
@@ -19,7 +19,7 @@ def Start(end_ip, porta, nome):
         myDataDatetime = root.get_child(["0:Objects", "2:Objeto", "2:MyDataDatetime"])
         obj = root.get_child(["0:Objects", "2:Objeto"])
         #teste = client.get_name_spece()
-        uri = "Teste Server"
+        uri = servidor
         idx = client.get_namespace_index(uri)
         
         print("Teste Objects is: ", client.get_objects_node())

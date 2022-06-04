@@ -11,10 +11,10 @@ texto = []
 with open("config_client.txt", "r") as arquivo:
     for linha in arquivo:
         #print(linha[len(linha)-1])
-        texto.append(linha)
+        texto.append(linha.replace("\n",""))
 
 def teste(nome):
-    Client.Start(texto[3], texto[5], nome)
+    Client.Start(texto[3], texto[5], texto[7], nome)
 
 #__main__#
 

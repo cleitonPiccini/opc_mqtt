@@ -1,8 +1,14 @@
 Número de clientes gerados:
-20
+2
 Endereço IP do Servidor:
-10.0.0.101
+127.0.0.1
 Porta :
 4840
 Nome URI:
 Teste Servidor
+Número de mensagens até dobrar o tamanho:
+100
+Tamanho inicio (em bytes):
+2
+Tamanho final (em bytes):
+256

@@ -48,6 +48,13 @@ def delete_monitored_items(event, dispatcher):
     print('delete_monitored_items')
 
 
+def say_hello_array(parent, happy):
+    print("Vou dar um print aqui")
+
+def teste_call(event):
+    print("oi a callback funciona")
+    
+
 if __name__ == "__main__":
 
 
@@ -61,14 +68,16 @@ if __name__ == "__main__":
     # setup our own namespace
     uri = texto[7]
     idx = server.register_namespace(uri)
-
-    # get Objects node, this is where we should put our custom stuff
     objects = server.get_objects_node()
 
+    freeopcua_namespace = server.get_namespace_index(uri)
     # populating our address space
     myfolder = objects.add_folder(idx, "myEmptyFolder")
     myobj = objects.add_object(idx, "Objeto")
-
+    #hellower = objects.get_child("0:Hellower")
+    #hellower.add_method(freeopcua_namespace, "Variavel", say_hello_array, [ua.VariantType.Int32], [ua.VariantType.String])
+    print("Vou printar o objects =")
+    print(objects)
     myData1 = myobj.add_variable(idx, "Variavel", 0)
     myDataDatetime = myobj.add_variable(idx, "MyDataDatetime", 0)
     myData1.set_writable()
@@ -77,16 +86,21 @@ if __name__ == "__main__":
     # starting!
     server.start()
     
+    
         
     # Create Callback for item event 
     server.subscribe_server_callback(CallbackType.ItemSubscriptionCreated, create_monitored_items)
     server.subscribe_server_callback(CallbackType.ItemSubscriptionModified, modify_monitored_items)
     server.subscribe_server_callback(CallbackType.ItemSubscriptionDeleted, delete_monitored_items)
-    
-   
+    #server.subscribe_server_callback(CallbackType.PreWrite, teste_call)
+    #readCurrentTime
+    #PreWrite 
     #print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
-        # enable following if you want to subscribe to nodes on server side
         embed()
+        while True:
+            pass
+        # enable following if you want to subscribe to nodes on server side
+    #    embed()
     finally:
         server.stop()

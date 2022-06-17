@@ -9,9 +9,10 @@ import xlsxwriter
 
 sys.path.insert(0, "..")
 
-myData1 = None
+Variavel_Global = None
 Echo = []
 Ack = []
+Data_Client = []
 arquivo_config = []
 mutex = threading.Lock()
 
@@ -28,18 +29,29 @@ tamanho_fim = int(arquivo_config[13])
 
 
 @uamethod
-def set_var(parent, value, numero_cliente):
-    global mutex
+def ack_method(parent, value, contador_Dado, numero_cliente):
+    global mutex, Ack, Variavel_Global
+    
     mutex.acquire()
-    #
-    value = str(myData1.get_value()) + " " + value
-    myData1.set_value(value)
-    Echo[numero_cliente-1].set_value(value)
-    Ack[numero_cliente-1].set_value(1)
-    #opc.set_node("ns=2;i=2").set_value(10)
-    #client.set_node("ns=2;i=2").set_value(10)
-    #print("olha o parante ai",parent)
+    
+    # Atribui o valor para Variavel_Global
+    # Atribui valor para a Confirmação do Cliente que alterou o dado.
+    if Variavel_Global != None :
+        Variavel_Global.set_value(value)
+        Ack[numero_cliente-1].set_value(contador_Dado)
+        
     mutex.release()
+    return 1
+
+@uamethod
+def echo_method(parent, value, numero_cliente):
+    global Echo
+
+    # Atribui o valor para Echo do cliente e invocou o metodo.
+    if (numero_cliente - 1) < len(Echo):
+        #Data_Client[numero_cliente - 1].set_value(value)
+        Echo[numero_cliente-1].set_value(value)
+
     return 1
 
 
@@ -53,59 +65,63 @@ if __name__ == "__main__":
     objects = server.get_objects_node()
 
     myobj = objects.add_object(idx, "Objeto")
+    
     # Gerando as variaveis.
-    myData1 = myobj.add_variable(idx, "Variavel", "")
-    #Echo = []
-    #Ack = []
+    Variavel_Global = myobj.add_variable(idx, "Variavel", "")
     indice = 1
     while indice <= numero_clientes:
+        #
+        Data_Client.append (myobj.add_variable(idx, "Data_" + str(indice), ""))
         Echo.append (myobj.add_variable(idx, "Echo_" + str(indice), ""))
         Ack.append (myobj.add_variable(idx, "Ack_" + str(indice), 0))
+        # 
+        Data_Client[indice - 1].set_writable()
         Echo[indice - 1].set_writable()
         Ack[indice - 1].set_writable()
         indice = indice + 1
         pass
-    
-    myDataDatetime = myobj.add_variable(idx, "MyDataDatetime", 0)
-    myData1.set_writable()    # Set MyVariable to be writable by clients
-    myDataDatetime.set_writable()
+    Variavel_Global.set_writable()
+    #myDataDatetime = myobj.add_variable(idx, "MyDataDatetime", 0)
+    # Set MyVariable to be writable by clients
+    #myDataDatetime.set_writable()
 
 
-    metodo = ua.Argument()
-    metodo.Name = "Variavel_Valor"
+    metodo_ack = ua.Argument()
+    metodo_ack.Name = "Confirma_Global"
     #metodo.DataType = ua.NodeId(ua.ObjectIds.Int64)
-    metodo.ValueRank = -1
-    metodo.ArrayDemisions = []
-    metodo.Description = ua.LocalizedText("Valor da Variavel")
+    metodo_ack.ValueRank = -1
+    metodo_ack.ArrayDemisions = []
+    metodo_ack.Description = ua.LocalizedText("Confirmação dado Global")
+
+    metodo_echo = ua.Argument()
+    metodo_echo.Name = "Echo_Global"
+    #metodo.DataType = ua.NodeId(ua.ObjectIds.Int64)
+    metodo_echo.ValueRank = -1
+    metodo_echo.ArrayDemisions = []
+    metodo_ack.Description = ua.LocalizedText("Echo da troca de dados com o Client")
 
     base = server.get_objects_node()
-    base.add_method(1, "Teste de metodo", set_var, [metodo])
+    base.add_method(1, "Metodo Confirmação Global", ack_method, [metodo_ack])
+    base.add_method(1, "Metodo Echo Cliente", echo_method, [metodo_echo])
     
     # populating our address space
         # Set MyVariable to be writable by clients
     # starting!
     server.start()
     try:
-        count = ""
-        old_count = ""
 
-        count = myData1.get_value()
-        myData1.set_value(count)
-
-        old_count = myData1.get_value()
-        
         while True:
             pass
             #time.sleep(2)
             #
-            #count = myData1.get_value()
+            #count = Variavel_Global.get_value()
             #if (count != old_count):
             #    old_count = count
             #    print("Temperatura = " + count)
 
             #count += 0.1
             #myDataDatetime.set_value(datetime.datetime.now())
-            #myData1.set_value(count)
+            #Variavel_Global.set_value(count)
     finally:
         #close connection, remove subcsriptions, etc
         server.stop()

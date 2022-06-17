@@ -1,13 +1,13 @@
 Número de clientes gerados:
-1
+10
 Endereço IP do Servidor:
-10.0.0.110
+192.168.15.63
 Porta :
 4840
 Nome URI:
 Teste Servidor
 Número de mensagens até dobrar o tamanho:
-50
+100
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):

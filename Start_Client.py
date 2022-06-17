@@ -1,6 +1,7 @@
 import threading
 import time
 import sys
+import os
 sys.path.insert(0, "..")
 
 import opcua
@@ -48,13 +49,18 @@ while (i <= numero_clientes):
     #t2 = threading.Thread(target=teste,args=())
     #t2.start()
 """
-t.append(threading.Thread(target=teste_,args=(1,))) 
-t[0].start()
-t.append(threading.Thread(target=teste,args=(2,))) 
-t[1].start()
+#t.append(threading.Thread(target=teste_,args=(1,))) 
+#t[0].start()
+#t.append(threading.Thread(target=teste,args=(2,))) 
+#t[1].start()
 
 #nome = "thread N = " + (str (i))
 #t.append(threading.Thread(target=teste,args=(i,))) 
 #t[0].start()
 #i = i + 1
 #time.sleep(1)
+
+
+while (i <= numero_clientes):
+    os.system(python3 Client.py i)
+    i = i + 1

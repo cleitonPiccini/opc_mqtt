@@ -84,7 +84,9 @@ class SubHandler(object):
             
         elif (Data_Cliente == node and Teste_Ativo == 1):
             
-            #Flag_Sub_Data_Cliente = 1
+            mutex.release()
+            """
+            Flag_Sub_Data_Cliente = 1
             
             if (worksheet != None and Inicio_Timer != None and contador_tamanho != None):
                 #print("olhai entrou")
@@ -92,6 +94,7 @@ class SubHandler(object):
                 data_hora = datetime.datetime.now() - Inicio_Timer
                 Write_Excell(contador_arquivo, data_hora, contador_tamanho)
                 contador_arquivo = contador_arquivo + 1
+            """
             
 
         #mutex.release()
@@ -208,8 +211,11 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
             if tipo_teste == 1:
                 #print("oiiiiii")                
                 if contador_mensagens < numero_mensagens :
+                    mutex.acquire()
                     mensagem = dado + str(contador_mensagens)
                     Inicio_Timer = datetime.datetime.now()
+                    
+                    
                     Data_Cliente.set_value(mensagem)
                     """
                     Flag_Sub_Data_Cliente = 0
@@ -219,13 +225,13 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         if Flag_Primeiro == 0:
                             Data_Cliente.set_value(mensagem)    
                             Flag_Primeiro = 1        
-                    
+                    """
                     #Obtem o tempo da troca de dados.
                     data_hora = datetime.datetime.now() - Inicio_Timer
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, data_hora, contador_tamanho)
                     contador_arquivo = contador_arquivo + 1
-                    """
+                    
                     contador_mensagens = contador_mensagens + 1 
                 else:
                     dado = dado * 2
@@ -242,12 +248,15 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     Flag_Sub_Echo = 0
                     Flag_Primeiro = 0
                     #device = objects.call_method(method_echo, mensagem, numero_cliente)
+                    """
                     while Flag_Sub_Echo == 0 :
                         #print("Aguardando retorno")
                         if Flag_Primeiro == 0:
                             device = objects.call_method(method_echo, mensagem, numero_cliente)
                             Flag_Primeiro = 1
+                    """
 
+                    device = objects.call_method(method_echo, mensagem, numero_cliente)
                     # Rerebe o Valor do Echo.
                     dado_server = Echo.get_value()
                     #Obtem o tempo da troca de dados.
@@ -302,3 +311,27 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
  
     finally:
         client.disconnect()
+
+def main(args):
+    return args[1]
+
+if __name__ == "__main__":
+
+    arquivo_config = []
+
+    with open("config_client.txt", "r") as arquivo:
+        for linha in arquivo:
+            arquivo_config.append(linha.replace("\n",""))
+
+    endpoint = "opc.tcp://" + arquivo_config[3] + ":" + arquivo_config[5]
+    uri = arquivo_config[7]
+    numero_clientes = int(arquivo_config[1])
+    numero_mensagens = int(arquivo_config[9])
+    tamanho_inicio = int(arquivo_config[11])
+    tamanho_fim = int(arquivo_config[13])
+    tipo_teste = int(arquivo_config[15])            
+
+    #Start(numero, endpoint, uri, n)
+    numero = main(sys.argv)
+    print("numero = ", numero)
+    Start(numero, endpoint, uri, numero_mensagens, tamanho_inicio, tamanho_fim, tipo_teste)

@@ -25,7 +25,6 @@ worksheet = None
 contador_arquivo = 2
 diferenca = 0
 Inicio_Timer = None
-Inicio_Timer = None
 contador_tamanho = None
 Teste_Ativo = 0
 start_mensagens = 0
@@ -66,51 +65,27 @@ class SubHandler(object):
         global mutex, Echo, Ack, Data_Cliente, contador_arquivo, worksheet, Teste_Ativo
         global Inicio_Timer, Flag_Sub_Echo, Flag_Sub_Ack, Flag_Sub_Data_Cliente, contador_tamanho
         global start_mensagens, semaforo
-
-        #mutex.acquire()
         
-        if (Echo == node and Teste_Ativo == 2 ):
-            #if (worksheet != None and Inicio_Timer != None and Echo != None ):
-                
-            Flag_Sub_Echo = 1
-            #if (Flag_Sub_Echo == 1)
-                #mutex.release()
+        # Confirmacao de escrita no Echo
+        if (Echo == node and Teste_Ativo == 2 ):                
+            #Flag_Sub_Echo = 1
+            if start_mensagens == 1 :
+                semaforo.release()
+                semaforo.release()
         
+        # Confirmacao de escrita no ACK
         elif (Ack == node and Teste_Ativo == 3 ):
-            #mutex.release()                        
-            Flag_Sub_Ack = 1
-            """
-            if (worksheet != None and Inicio_Timer != None and contador_tamanho != None):
-                
-                #Obtem o tempo da troca de dados.
-                data_hora = datetime.datetime.now() - Inicio_Timer
-                Write_Excell(contador_arquivo, data_hora, contador_tamanho)
-                contador_arquivo = contador_arquivo + 1
-            """
-            
+            #Flag_Sub_Ack = 1
+            if start_mensagens == 1 :
+                semaforo.release()
+                semaforo.release()
+
+        # Confirmacao de escrita na Data_Cliente
         elif (Data_Cliente == node and Teste_Ativo == 1 ):
-
-            #mutex.release()
-
-            #print("Entrei errado")
-            
             #Flag_Sub_Data_Cliente = 1
             if start_mensagens == 1 :
                 semaforo.release()
                 semaforo.release()
-                #Flag_Sub_Data_Cliente = 1
-
-            """
-            if (worksheet != None and Inicio_Timer != None and contador_tamanho != None):
-                #print("olhai entrou")
-                #Obtem o tempo da troca de dados.
-                data_hora = datetime.datetime.now() - Inicio_Timer
-                Write_Excell(contador_arquivo, data_hora, contador_tamanho)
-                contador_arquivo = contador_arquivo + 1
-            """
-            
-
-        #mutex.release()
 
     def event_notification(self, event):
         print("Python: New event", event)
@@ -135,9 +110,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         print("Inicio do teste - Cliente Número = ", numero_cliente)
         
         client.connect()
-
-        #objects = client.get_objects_node()
-        
+        # Inicia as variaveis OPC UA.
         root = client.get_root_node()
         nome_data = "2:Data_" + str(numero_cliente)
         nome_echo = "2:Echo_" + str(numero_cliente)
@@ -155,7 +128,8 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         Ack.set_value(0)
 
         time.sleep(2)
-
+        
+        #Cria a assinatura das variaveis.
         handler = SubHandler()
         sub = client.create_subscription(0, handler)        
         method_ack = objects.get_children()[2]
@@ -202,12 +176,13 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
             dado = dado + dado
             contador_tamanho = contador_tamanho + 1
 
-        # Inicia a troca de mensagens com o Servidor.
+        # Variaveis de resultado do teste.
         contador_mensagens = 0
         old_time = None
         cpu_old = 0
         ram_old = 0
 
+        # Inicia a troca de mensagens com o Servidor.
         while (contador_tamanho <= int(tamanho_fim)):
             
             # Teste Ack             
@@ -219,26 +194,9 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     Inicio_Timer = datetime.datetime.now()
                     
                     semaforo.acquire()
-                    #if Flag_Sub_Data_Cliente == 0:
-                    #Flag_Sub_Data_Cliente = 0
                     Data_Cliente.set_value(mensagem)
-                    #while Flag_Sub_Data_Cliente == 0:
                     semaforo.acquire()
-                    #mutex.acquire()
-                    #mutex.acquire()
 
-                    """
-                    Flag_Sub_Data_Cliente = 0
-                    Flag_Primeiro = 0
-                    
-                    
-                        semaforo.acquire()
-                        if Flag_Primeiro == 0:
-                            Data_Cliente.set_value(mensagem)    
-                            Flag_Primeiro = 1
-                        
-                            
-                    """
                     #Obtem o tempo da troca de dados.
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
                     
@@ -257,6 +215,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     contador_mensagens = contador_mensagens + 1 
                     #mutex.release()
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho)
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
@@ -266,66 +225,96 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     ram_old = 0              
                     contador_tamanho = contador_tamanho * 2
                     contador_arquivo = contador_arquivo + 1
-                time.sleep(0.5)
+                time.sleep(0.3)
             
             # Teste Echo
             elif tipo_teste == 2:
 
                 if contador_mensagens < numero_mensagens :
-                    #mutex.acquire()
-                    #start_mensagens = 1
+                    
+                    start_mensagens = 1
+
+                    # Envia mensagem
                     mensagem = dado + str(contador_mensagens)
                     Inicio_Timer = datetime.datetime.now()
-                    
-                    Flag_Sub_Echo = 0
-                    Flag_Primeiro = 0
-                    #device = objects.call_method(method_echo, mensagem, numero_cliente)
-                    
-                    while Flag_Sub_Echo == 0 :
-                        #print("Aguardando retorno")
-                        if Flag_Primeiro == 0:
-                            device = objects.call_method(method_echo, mensagem, int(numero_cliente))
-                            Flag_Primeiro = 1
+                    semaforo.acquire()
+                    Echo.set_value(mensagem)
+                    semaforo.acquire()
 
-                    #device = objects.call_method(method_echo, mensagem, numero_cliente)
                     # Rerebe o Valor do Echo.
                     dado_server = Echo.get_value()
+                    
                     #Obtem o tempo da troca de dados.
-                    data_hora = datetime.datetime.now() - Inicio_Timer
-                    #Salva os dados no arquivo.
-                    Write_Excell(contador_arquivo, data_hora, contador_tamanho)
-                    contador_arquivo = contador_arquivo + 1
+                    atraso_mensagem = datetime.datetime.now() - Inicio_Timer
+                    if old_time == None :
+                        old_time = atraso_mensagem
+                    else:    
+                        old_time = atraso_mensagem + old_time
+                    media_tempo = old_time / (contador_mensagens + 1)
+                    
+                    #Obtem a carga da CPU
+                    cpu_old = carga_cpu() + cpu_old
+                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    
+                    #Obtem a carga da Memoria RAM
+                    ram_old = carga_ram() + ram_old
+                    media_ram = ram_old / (contador_mensagens + 1)
+
                     contador_mensagens = contador_mensagens + 1 
                 else:
+                    #Salva os dados no arquivo.
+                    Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
-                    contador_mensagens = 0                
+                    contador_mensagens = 0
+                    old_time = None
+                    cpu_old = 0
+                    ram_old = 0
                     contador_tamanho = contador_tamanho * 2
-                time.sleep(0.2)
+                    contador_arquivo = contador_arquivo + 1
+                time.sleep(0.3)
 
+            # Teste Ack - Todos os Clientes escrevem na mesma variavel do server
             elif tipo_teste == 3:
                 
                 if contador_mensagens < numero_mensagens :
+                    
+                    start_mensagens = 1
+
+                    # Envia mensagem
                     mensagem = dado + str(contador_mensagens)
                     Inicio_Timer = datetime.datetime.now()
-                    #device = objects.call_method(method_ack, mensagem, (contador_mensagens), numero_cliente)        
-                    
-                    Flag_Sub_Ack = 0
-                    Flag_Primeiro = 0
-                    while Flag_Sub_Ack == 0:
-                        if Flag_Primeiro == 0:
-                            device = objects.call_method(method_ack, mensagem, (int(contador_mensagens) + 1), int(numero_cliente))        
-                            Flag_Primeiro = 1
+                    semaforo.acquire()
+                    device = objects.call_method(method_ack, mensagem, (int(contador_mensagens) + 1), int(numero_cliente))
+                    semaforo.acquire()
+
                     #Obtem o tempo da troca de dados.
-                    data_hora = datetime.datetime.now() - Inicio_Timer
-                    #Salva os dados no arquivo.
-                    Write_Excell(contador_arquivo, data_hora, contador_tamanho)
-                    contador_arquivo = contador_arquivo + 1                    
+                    atraso_mensagem = datetime.datetime.now() - Inicio_Timer
+                    if old_time == None :
+                        old_time = atraso_mensagem
+                    else:    
+                        old_time = atraso_mensagem + old_time
+                    media_tempo = old_time / (contador_mensagens + 1)
+                    
+                    #Obtem a carga da CPU
+                    cpu_old = carga_cpu() + cpu_old
+                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    
+                    #Obtem a carga da Memoria RAM
+                    ram_old = carga_ram() + ram_old
+                    media_ram = ram_old / (contador_mensagens + 1)
+                    
                     contador_mensagens = contador_mensagens + 1 
                 else:
+                    #Salva os dados no arquivo.
+                    Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
-                    contador_mensagens = 0                
+                    contador_mensagens = 0
+                    old_time = None
+                    cpu_old = 0
+                    ram_old = 0
                     contador_tamanho = contador_tamanho * 2
-                time.sleep(0.2)
+                    contador_arquivo = contador_arquivo + 1
+                time.sleep(0.3)
 
             else:
                 break
@@ -336,16 +325,10 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         sub.unsubscribe(handle)
         time.sleep(2)
         sub.delete()
-        print("Fim do teste Cliente Número = ", numero_cliente)
- 
+        
     finally:
-        #time.sleep(2)
-        #workbook.close()
-        #time.sleep(2)
-        #sub.unsubscribe(handle)
-        #time.sleep(2)
-        #sub.delete()
         client.disconnect()
+        print("Fim do teste Cliente Número = ", numero_cliente)
 
 def main(args):
     return args[1]
@@ -354,6 +337,7 @@ if __name__ == "__main__":
 
     arquivo_config = []
 
+    # Le arquivo de configuracao.
     with open("config_client.txt", "r") as arquivo:
         for linha in arquivo:
             arquivo_config.append(linha.replace("\n",""))
@@ -366,6 +350,6 @@ if __name__ == "__main__":
     tamanho_fim = int(arquivo_config[13])
     tipo_teste = int(arquivo_config[15])            
 
-    #Start(numero, endpoint, uri, n)
+    # Obtem o numero do processo que iniciou o Client.
     numero = main(sys.argv)
     Start(numero, endpoint, uri, numero_mensagens, tamanho_inicio, tamanho_fim, tipo_teste)

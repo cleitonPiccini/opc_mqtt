@@ -1,16 +1,16 @@
 Número de clientes gerados:
-1
+10
 Endereço IP do Servidor:
-10.0.0.104
+127.0.0.1
 Porta :
 4844
 Nome URI:
 Teste Servidor
 Número de mensagens até dobrar o tamanho:
-500
+2000
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):
-2048
+32768
 Tipo de Teste = (1 = Teste Ack, 2 = Teste Echo, 3 = Teste Ack em variavel global)
 1

@@ -1,3 +1,4 @@
+import subprocess
 import threading
 import time
 import sys
@@ -33,22 +34,25 @@ def teste_(numero):
 def teste(numero):
     teste_2.Start(numero,endpoint, uri, numero_mensagens, tamanho_inicio, tamanho_fim, tipo_teste)
 
+def start_client (numero):
+    os.system("python3 Client.py " + str(numero))    
+
 #__main__#
 
 i = 1
 t = []
 
-"""
+
 while (i <= numero_clientes):
     
     nome = "thread N = " + (str (i))
-    t.append(threading.Thread(target=teste,args=(i,))) 
+    t.append(threading.Thread(target=start_client,args=(i,))) 
     t[i-1].start()
     i = i + 1
     #time.sleep(1)
     #t2 = threading.Thread(target=teste,args=())
     #t2.start()
-"""
+
 #t.append(threading.Thread(target=teste_,args=(1,))) 
 #t[0].start()
 #t.append(threading.Thread(target=teste,args=(2,))) 
@@ -60,7 +64,9 @@ while (i <= numero_clientes):
 #i = i + 1
 #time.sleep(1)
 
-
+"""
 while (i <= numero_clientes):
-    os.system(python3 Client.py i)
+    os.system("python3 Client.py " + str(i))
+    #subprocess.run(["python3 Client.py " + str(i)])
     i = i + 1
+"""    

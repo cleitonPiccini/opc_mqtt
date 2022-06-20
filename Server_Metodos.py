@@ -46,12 +46,13 @@ def ack_method(parent, value, contador_Dado, numero_cliente):
 @uamethod
 def echo_method(parent, value, numero_cliente):
     global Echo
-
+    mutex.acquire()
     # Atribui o valor para Echo do cliente e invocou o metodo.
     if (numero_cliente - 1) < len(Echo):
         #Data_Client[numero_cliente - 1].set_value(value)
         Echo[numero_cliente-1].set_value(value)
 
+    mutex.release()
     return 1
 
 

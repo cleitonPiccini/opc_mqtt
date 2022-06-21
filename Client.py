@@ -204,8 +204,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
-
-                    media_tempo = old_time / (contador_mensagens + 1)
+                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
                     
                     cpu_old = carga_cpu() + cpu_old
                     media_cpu = cpu_old / (contador_mensagens + 1)
@@ -215,7 +214,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     contador_mensagens = contador_mensagens + 1 
                     #mutex.release()
                 else:
-                    print("Trocou o tamanho = ", contador_tamanho)
+                    #print("Trocou o tamanho = ", contador_tamanho)
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
@@ -249,8 +248,8 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
-                        old_time = atraso_mensagem + old_time
-                    media_tempo = old_time / (contador_mensagens + 1)
+                        old_time = atraso_mensagem + old_time                        
+                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
@@ -293,7 +292,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
-                    media_tempo = old_time / (contador_mensagens + 1)
+                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old

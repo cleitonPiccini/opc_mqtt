@@ -3,9 +3,7 @@ Número de clientes gerados:
 Endereço IP do Servidor:
 127.0.0.1
 Porta :
-4844
-Nome URI:
-Teste Servidor
+1883
 Número de mensagens até dobrar o tamanho:
 100
 Tamanho inicio (em bytes):

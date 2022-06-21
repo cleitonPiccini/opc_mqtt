@@ -211,8 +211,12 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (contador_mensagens + 1)
                     
-                    contador_mensagens = contador_mensagens + 1 
-                    #mutex.release()
+                    #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
+                    if contador_mensagens == int(numero_mensagens / 2):
+                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        contador_arquivo = contador_arquivo + 1
+                    
+                    contador_mensagens = contador_mensagens + 1
                 else:
                     #print("Trocou o tamanho = ", contador_tamanho)
                     #Salva os dados no arquivo.
@@ -259,6 +263,11 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (contador_mensagens + 1)
 
+                    #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
+                    if contador_mensagens == int(numero_mensagens / 2):
+                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        contador_arquivo = contador_arquivo + 1
+
                     contador_mensagens = contador_mensagens + 1 
                 else:
                     #Salva os dados no arquivo.
@@ -301,6 +310,11 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (contador_mensagens + 1)
+
+                    #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
+                    if contador_mensagens == int(numero_mensagens / 2):
+                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        contador_arquivo = contador_arquivo + 1
                     
                     contador_mensagens = contador_mensagens + 1 
                 else:

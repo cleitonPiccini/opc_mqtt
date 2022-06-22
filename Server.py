@@ -111,8 +111,9 @@ if __name__ == "__main__":
     server.start()
     try:
 
-        while True:
-            pass
+        nome = input("Rodando")
+        #while True:
+            #pass
             #time.sleep(2)
             #
             #count = Variavel_Global.get_value()

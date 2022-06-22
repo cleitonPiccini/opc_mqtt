@@ -5,9 +5,8 @@ import sys
 import os
 sys.path.insert(0, "..")
 
-
 def start_client (numero):
-    os.system("python3 Client.py " + str(numero))    
+    os.system("python3 Client_mqtt.py " + str(numero))    
 
 arquivo_config = []
 
@@ -29,7 +28,6 @@ t = []
 
 while (i <= numero_clientes):
     
-    nome = "thread N = " + (str (i))
     t.append(threading.Thread(target=start_client,args=(i,))) 
     t[i-1].start()
     i = i + 1

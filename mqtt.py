@@ -12,11 +12,13 @@ def on_message(client, userdata, msg):
     print(msg.topic+" olha ai "+str(msg.payload))
 
 client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
+#client.on_connect = on_connect
+#client.on_connect = client.subscribe("teste/cleiton")
+
 
 client.connect( "localhost", 1883, 60)
-
+client.subscribe("Teste/Data_1")
+client.on_message = on_message
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a

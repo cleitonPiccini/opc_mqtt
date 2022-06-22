@@ -3,9 +3,9 @@ Número de clientes gerados:
 Endereço IP do Servidor:
 127.0.0.1
 Porta :
-1883
+1884
 Número de mensagens até dobrar o tamanho:
-100
+1000
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):

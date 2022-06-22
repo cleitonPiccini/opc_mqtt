@@ -8,7 +8,6 @@ import psutil
 import xlsxwriter
 import datetime
 
-
 semaforo = threading.Semaphore(2)
 workbook = None
 worksheet = None
@@ -125,14 +124,14 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
             Write_Excell(1,'Tempo de Echo', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
-            client.subscribe(topico_echo, 0)
+            client.subscribe(topico_echo)
 
         elif tipo_teste == 3:
             nome_xlsx = "MQTT Teste Ack Variavel Global Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
             Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
-            client.subscribe(topico_ack, 0)
+            client.subscribe(topico_ack)
             
         else:
             print("Erro no tipo de teste")
@@ -184,6 +183,9 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
                         Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        old_time = None
+                        cpu_old = 0
+                        ram_old = 0
                         contador_arquivo = contador_arquivo + 1
                     
                     contador_mensagens = contador_mensagens + 1
@@ -236,6 +238,9 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
                         Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        old_time = None
+                        cpu_old = 0
+                        ram_old = 0
                         contador_arquivo = contador_arquivo + 1
 
                     contador_mensagens = contador_mensagens + 1 
@@ -262,7 +267,8 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     mensagem = dado + str(contador_mensagens)
                     Inicio_Timer = datetime.datetime.now()
                     semaforo.acquire()
-                    device = objects.call_method(method_ack, mensagem, (int(contador_mensagens) + 1), int(numero_cliente))
+                    #device = objects.call_method(method_ack, mensagem, (int(contador_mensagens) + 1), int(numero_cliente))
+                    client.publish(topico_var_global, mensagem)
                     semaforo.acquire()
 
                     #Obtem o tempo da troca de dados.
@@ -284,6 +290,9 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
                         Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                        old_time = None
+                        cpu_old = 0
+                        ram_old = 0
                         contador_arquivo = contador_arquivo + 1
                     
                     contador_mensagens = contador_mensagens + 1 

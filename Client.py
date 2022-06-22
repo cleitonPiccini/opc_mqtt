@@ -10,28 +10,49 @@ import psutil
 import xlsxwriter
 import datetime
 
-Flag_Sub_Echo = 0
-Flag_Sub_Ack = 0
-Flag_Sub_Data_Cliente = 0
+#Flag_Sub_Echo = 0
+#Flag_Sub_Ack = 0
+#Flag_Sub_Data_Cliente = 0
 Data_Cliente = None
 Echo = None
 Ack = None
-myData1 = None
-mutex = threading.Lock()
+#myData1 = None
+#mutex = threading.Lock()
+client = None
 semaforo = threading.Semaphore(2)
 workbook = None
 worksheet = None
 #contador_arquivo = 2
-contador_arquivo = 2
-diferenca = 0
-Inicio_Timer = None
-contador_tamanho = None
+#contador_arquivo = 2
+#diferenca = 0
+#Inicio_Timer = None
+#contador_tamanho = None
 Teste_Ativo = 0
 start_mensagens = 0
 
 def Subscribe ():
 
-    pass
+    global client, Teste_Ativo, Echo, Ack, Data_Cliente
+
+    handler = SubHandler()
+    sub = client.create_subscription(1, handler)
+    if Teste_Ativo == 1:
+        handle = sub.subscribe_data_change(Data_Cliente)
+    elif Teste_Ativo == 2:
+        handle = sub.subscribe_data_change(Echo)
+    elif Teste_Ativo == 3:
+        handle = sub.subscribe_data_change(Ack)
+    else:
+        print("Erro no tipo de teste.")
+
+    print("Precione qualquer tecla para sair : ")
+    #sair = " "
+
+    #while (sair == "s"):
+    sair = input()
+    sub.unsubscribe(handle)
+    time.sleep(2)
+    sub.delete()       
 
 def carga_cpu ():    
     #Obtem a carga da CPU
@@ -62,11 +83,12 @@ def Write_Excell (indice, dado_A, dado_B, dado_C, dado_D):
 class SubHandler(object):
 
     def datachange_notification(self, node, val, data):
-        global mutex, Echo, Ack, Data_Cliente, contador_arquivo, worksheet, Teste_Ativo
-        global Inicio_Timer, Flag_Sub_Echo, Flag_Sub_Ack, Flag_Sub_Data_Cliente, contador_tamanho
+        #global mutex, Echo, Ack, Data_Cliente, contador_arquivo, worksheet, Teste_Ativo
+        #global Inicio_Timer, Flag_Sub_Echo, Flag_Sub_Ack, Flag_Sub_Data_Cliente, contador_tamanho
         global start_mensagens, semaforo
         
         # Confirmacao de escrita no Echo
+        """
         if (Echo == node and Teste_Ativo == 2 ):                
             #Flag_Sub_Echo = 1
             if start_mensagens == 1 :
@@ -86,6 +108,10 @@ class SubHandler(object):
             if start_mensagens == 1 :
                 semaforo.release()
                 semaforo.release()
+        """
+        if start_mensagens == 1 :
+                semaforo.release()
+                semaforo.release()
 
     def event_notification(self, event):
         print("Python: New event", event)
@@ -99,9 +125,10 @@ class SubHandler(object):
 
 
 def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, tamanho_fim, tipo_teste):
-    global Echo, Node_Alterado, mutex, Ack, myData1, worksheet, workbook, diferenca, Data_Cliente, Teste_Ativo
-    global Inicio_Timer, contador_tamanho, contador_arquivo, Flag_Sub_Echo, Flag_Sub_Ack, Flag_Sub_Data_Cliente
-    global start_mensagens, semaforo
+    #global Echo, Node_Alterado, mutex, Ack, myData1, worksheet, workbook, diferenca, Data_Cliente, Teste_Ativo
+    global worksheet, workbook, Teste_Ativo, Echo, Ack, Data_Cliente
+    #global Inicio_Timer, contador_tamanho, contador_arquivo, Flag_Sub_Echo, Flag_Sub_Ack, Flag_Sub_Data_Cliente
+    global start_mensagens, semaforo, client
 
     Teste_Ativo = tipo_teste
 
@@ -130,8 +157,8 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         time.sleep(2)
         
         #Cria a assinatura das variaveis.
-        handler = SubHandler()
-        sub = client.create_subscription(0, handler)        
+        #handler = SubHandler()
+        #sub = client.create_subscription(10, handler)        
         method_ack = objects.get_children()[2]
         method_echo = objects.get_children()[3]
 
@@ -139,32 +166,23 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         if tipo_teste == 1:
             nome_xlsx = "Teste Ack Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
-            worksheet = workbook.add_worksheet() 
-            worksheet.write('A1', 'Tempo de ACK')
-            worksheet.write('B1', 'Carga Processador')
-            worksheet.write('C1', 'Carga Memoria RAM')
-            worksheet.write('D1', 'Tamanho do dado')
-            handle = sub.subscribe_data_change(Data_Cliente)
+            worksheet = workbook.add_worksheet()
+            Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
+            #handle = sub.subscribe_data_change(Data_Cliente)            
             
         elif tipo_teste == 2:
             nome_xlsx = "Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
-            worksheet = workbook.add_worksheet() 
-            worksheet.write('A1', 'Tempo de Echo')
-            worksheet.write('B1', 'Carga Processador')
-            worksheet.write('C1', 'Carga Memoria RAM')
-            worksheet.write('D1', 'Tamanho do dado')
-            handle = sub.subscribe_data_change(Echo)
-
+            worksheet = workbook.add_worksheet()
+            Write_Excell(1,'Tempo de Echo', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
+            #handle = sub.subscribe_data_change(Echo)
+            
         elif tipo_teste == 3:
             nome_xlsx = "Teste Ack Variavel Global Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
-            worksheet.write('A1', 'Tempo de ACK')
-            worksheet.write('B1', 'Carga Processador')
-            worksheet.write('C1', 'Carga Memoria RAM')
-            worksheet.write('D1', 'Tamanho do dado')
-            handle = sub.subscribe_data_change(Ack)
+            Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
+            #handle = sub.subscribe_data_change(Ack)
             
         else:
             print("Erro no tipo de teste")
@@ -178,9 +196,13 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
 
         # Variaveis de resultado do teste.
         contador_mensagens = 0
+        contador_arquivo = 2
         old_time = None
         cpu_old = 0
         ram_old = 0
+
+        t = threading.Thread(target=Subscribe, args=())
+        t.start()
 
         # Inicia a troca de mensagens com o Servidor.
         while (contador_tamanho <= int(tamanho_fim)):
@@ -218,7 +240,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     
                     contador_mensagens = contador_mensagens + 1
                 else:
-                    #print("Trocou o tamanho = ", contador_tamanho)
+                    print("Trocou o tamanho = ", contador_tamanho)
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
@@ -338,10 +360,10 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         sub.unsubscribe(handle)
         time.sleep(2)
         sub.delete()
-        
+        print("Fim do teste Cliente Número = ", numero_cliente)
     finally:
         client.disconnect()
-        print("Fim do teste Cliente Número = ", numero_cliente)
+        
 
 def main(args):
     return args[1]

@@ -17,9 +17,12 @@ client = mqtt.Client()
 
 def carga_cpu ():    
     #Obtem a carga da CPU
-    load1, load5, load15 = psutil.getloadavg()                 
-    carga_processador = (load15/os.cpu_count()) * 100
+    #load1, load5, load15 = psutil.getloadavg()                 
+    #load15 = (psutil.cpu_percent()/100)
+    #carga_processador = (load15/os.cpu_count()) * 100
+    carga_processador = psutil.cpu_percent()
     return carga_processador
+    #return 1
 
 def carga_ram ():
     #Obtem a carga da memória
@@ -146,6 +149,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
         # Variaveis de resultado do teste.
 
         contador_mensagens = 0
+        aux_contador_mensagens = 0
         contador_arquivo = 2
         old_time = None
         cpu_old = 0
@@ -157,7 +161,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
             # Teste Ack             
             if tipo_teste == 1:               
                 if contador_mensagens < numero_mensagens :
-                    print("While Tamanho mensagem = ", contador_tamanho, " Ciclo = ", contador_mensagens)
+                    #print("While Tamanho mensagem = ", contador_tamanho, " Ciclo = ", contador_mensagens)
                     start_mensagens = 1
                     mensagem = dado + str(contador_mensagens)
                     Inicio_Timer = datetime.datetime.now()
@@ -173,12 +177,12 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
-                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
+                    media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
                     cpu_old = carga_cpu() + cpu_old
-                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     ram_old = carga_ram() + ram_old
-                    media_ram = ram_old / (contador_mensagens + 1)
+                    media_ram = ram_old / (aux_contador_mensagens + 1)
                     
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
@@ -186,14 +190,17 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
+                        aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
                     
                     contador_mensagens = contador_mensagens + 1
+                    aux_contador_mensagens = aux_contador_mensagens + 1
                 else:
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
                     contador_mensagens = 0
+                    aux_contador_mensagens = 0
                     old_time = None
                     cpu_old = 0
                     ram_old = 0              
@@ -225,15 +232,15 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time                        
-                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
+                    media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
-                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     
                     #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
-                    media_ram = ram_old / (contador_mensagens + 1)
+                    media_ram = ram_old / (aux_contador_mensagens + 1)
 
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
@@ -241,14 +248,17 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
+                        aux_contador_mensagens = 0
                         contador_arquivo = contador_arquivo + 1
 
-                    contador_mensagens = contador_mensagens + 1 
+                    contador_mensagens = contador_mensagens + 1
+                    aux_contador_mensagens = aux_contador_mensagens + 1
                 else:
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
                     contador_mensagens = 0
+                    aux_contador_mensagens = 0
                     old_time = None
                     cpu_old = 0
                     ram_old = 0
@@ -277,15 +287,15 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
-                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
+                    media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
-                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     
                     #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
-                    media_ram = ram_old / (contador_mensagens + 1)
+                    media_ram = ram_old / (aux_contador_mensagens + 1)
 
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
@@ -293,13 +303,16 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
+                        aux_contador_mensagens = 0
                         contador_arquivo = contador_arquivo + 1
                     
+                    aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1 
                 else:
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
+                    aux_contador_mensagens = 0
                     contador_mensagens = 0
                     old_time = None
                     cpu_old = 0

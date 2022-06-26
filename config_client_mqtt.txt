@@ -1,11 +1,11 @@
 Número de clientes gerados:
 10
 Endereço IP do Servidor:
-127.0.0.1
+169.254.84.106
 Porta :
 1884
 Número de mensagens até dobrar o tamanho:
-1000
+5000
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):

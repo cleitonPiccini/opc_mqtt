@@ -248,7 +248,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
-                        aux_contador_mensagens = 0
+                        aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
 
                     contador_mensagens = contador_mensagens + 1
@@ -303,7 +303,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
-                        aux_contador_mensagens = 0
+                        aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
                     
                     aux_contador_mensagens = aux_contador_mensagens + 1

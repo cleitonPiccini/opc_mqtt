@@ -283,15 +283,15 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time                        
-                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
+                    media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
-                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     
                     #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
-                    media_ram = ram_old / (contador_mensagens + 1)
+                    media_ram = ram_old / (aux_contador_mensagens + 1)
 
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
@@ -305,6 +305,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1 
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2
@@ -337,15 +338,15 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
-                    media_tempo = ((old_time.total_seconds() * 1000) / (contador_mensagens + 1))
+                    media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
                     #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
-                    media_cpu = cpu_old / (contador_mensagens + 1)
+                    media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     
                     #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
-                    media_ram = ram_old / (contador_mensagens + 1)
+                    media_ram = ram_old / (aux_contador_mensagens + 1)
 
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == int(numero_mensagens / 2):
@@ -359,6 +360,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
                     dado = dado * 2

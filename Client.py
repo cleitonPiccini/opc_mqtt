@@ -158,8 +158,8 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         time.sleep(2)
         
         #Cria a assinatura das variaveis.
-        #handler = SubHandler()
-        #sub = client.create_subscription(10, handler)        
+        handler = SubHandler()
+        sub = client.create_subscription(1, handler)        
         method_ack = objects.get_children()[2]
         method_echo = objects.get_children()[3]
 
@@ -169,21 +169,21 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet()
             Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
-            #handle = sub.subscribe_data_change(Data_Cliente)            
+            handle = sub.subscribe_data_change(Data_Cliente)            
             
         elif tipo_teste == 2:
             nome_xlsx = "Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet()
             Write_Excell(1,'Tempo de Echo', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
-            #handle = sub.subscribe_data_change(Echo)
+            handle = sub.subscribe_data_change(Echo)
             
         elif tipo_teste == 3:
             nome_xlsx = "Teste Ack Variavel Global Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
             Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
-            #handle = sub.subscribe_data_change(Ack)
+            handle = sub.subscribe_data_change(Ack)
             
         else:
             print("Erro no tipo de teste")
@@ -203,8 +203,8 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         cpu_old = 0
         ram_old = 0
 
-        t = threading.Thread(target=Subscribe, args=())
-        t.start()
+        #t = threading.Thread(target=Subscribe, args=())
+        #t.start()
 
         # Inicia a troca de mensagens com o Servidor.
         while (contador_tamanho <= int(tamanho_fim)):

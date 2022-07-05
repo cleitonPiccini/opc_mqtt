@@ -1,5 +1,5 @@
 Número de clientes gerados:
-10
+20
 Endereço IP do Servidor:
 169.254.84.106
 Porta :
@@ -11,4 +11,4 @@ Tamanho inicio (em bytes):
 Tamanho final (em bytes):
 32768
 Tipo de Teste = (1 = Teste Ack, 2 = Teste Echo, 3 = Teste Ack em variavel global)
-2
+1

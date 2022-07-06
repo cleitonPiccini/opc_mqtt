@@ -147,11 +147,12 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
             contador_tamanho = contador_tamanho + 1
 
         # Variaveis de resultado do teste.
-
         contador_mensagens = 0
         aux_contador_mensagens = 0
         contador_arquivo = 2
         old_time = None
+        desvio_padrao = 0
+        amostra = []
         cpu_old = 0
         ram_old = 0
 
@@ -172,7 +173,8 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
 
                     #Obtem o tempo da troca de dados.
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
-                    
+                    amostra.append(atraso_mensagem.total_seconds() * 1000)
+
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
@@ -185,27 +187,63 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     media_ram = ram_old / (aux_contador_mensagens + 1)
                     
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
-                    if contador_mensagens == int(numero_mensagens / 2):
-                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                    if contador_mensagens == (int(numero_mensagens / 2) - 1):
+                        # Cálcula diferança
+                        indice = 0
+                        while (indice < len(amostra)):
+                            amostra[indice] = (amostra[indice] - media_tempo)**2
+                            indice = indice +1
+                        # Somatório para desvio padrão.
+                        indice = 0
+                        somatorio = 0
+                        while (indice < len(amostra)):
+                            somatorio = somatorio + amostra[indice]
+                            indice = indice +1
+                        # Calcula desvio padrão.
+                        desvio_padrao = math.sqrt((somatorio / len(amostra)))
+                        # Salva os dados na planilha.
+                        Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)    
+                        # Reseta dados 
+                        amostra.clear()
+                        amostra = []
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
                     
-                    contador_mensagens = contador_mensagens + 1
                     aux_contador_mensagens = aux_contador_mensagens + 1
+                    contador_mensagens = contador_mensagens + 1
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
+                    # Cálcula diferança
+                    indice = 0
+                    while (indice < len(amostra)):
+                        amostra[indice] = (amostra[indice] - media_tempo)**2
+                        indice = indice +1
+                    # Somatório para desvio padrão.
+                    indice = 0
+                    somatorio = 0
+                    while (indice < len(amostra)):
+                        somatorio = somatorio + amostra[indice]
+                        indice = indice +1
+                    # Calcula desvio padrão.
+                    desvio_padrao = math.sqrt((somatorio / len(amostra)))
                     #Salva os dados no arquivo.
-                    Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
+                    Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)
+                    # Dobra a carga de envio
                     dado = dado * 2
+                    # Reseta os dados.
+                    amostra.clear()
+                    amostra = []
                     contador_mensagens = 0
                     aux_contador_mensagens = 0
                     old_time = None
                     cpu_old = 0
-                    ram_old = 0              
+                    ram_old = 0
                     contador_tamanho = contador_tamanho * 2
                     contador_arquivo = contador_arquivo + 1
+                    
                 time.sleep(0.3)
             
             # Teste Echo
@@ -222,41 +260,71 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     client.publish(topico_echo, mensagem)
                     semaforo.acquire()
 
-                    # Rerebe o Valor do Echo.
-                    #dado_server = Echo.get_value()
-                    #dado_broker = client.msg.payload
-                    
                     #Obtem o tempo da troca de dados.
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
+                    amostra.append(atraso_mensagem.total_seconds() * 1000)
+
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
-                        old_time = atraso_mensagem + old_time                        
+                        old_time = atraso_mensagem + old_time
                     media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
-                    #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
-                    
-                    #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
-
+                    
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
-                    if contador_mensagens == int(numero_mensagens / 2):
-                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                    if contador_mensagens == (int(numero_mensagens / 2) - 1):
+                        # Cálcula diferança
+                        indice = 0
+                        while (indice < len(amostra)):
+                            amostra[indice] = (amostra[indice] - media_tempo)**2
+                            indice = indice +1
+                        # Somatório para desvio padrão.
+                        indice = 0
+                        somatorio = 0
+                        while (indice < len(amostra)):
+                            somatorio = somatorio + amostra[indice]
+                            indice = indice +1
+                        # Calcula desvio padrão.
+                        desvio_padrao = math.sqrt((somatorio / len(amostra)))
+                        # Salva os dados na planilha.
+                        Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)    
+                        # Reseta dados 
+                        amostra.clear()
+                        amostra = []
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-
-                    contador_mensagens = contador_mensagens + 1
+                    
                     aux_contador_mensagens = aux_contador_mensagens + 1
+                    contador_mensagens = contador_mensagens + 1
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
+                    # Cálcula diferança
+                    indice = 0
+                    while (indice < len(amostra)):
+                        amostra[indice] = (amostra[indice] - media_tempo)**2
+                        indice = indice +1
+                    # Somatório para desvio padrão.
+                    indice = 0
+                    somatorio = 0
+                    while (indice < len(amostra)):
+                        somatorio = somatorio + amostra[indice]
+                        indice = indice +1
+                    # Calcula desvio padrão.
+                    desvio_padrao = math.sqrt((somatorio / len(amostra)))
                     #Salva os dados no arquivo.
-                    Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
+                    Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)
+                    # Dobra a carga de envio
                     dado = dado * 2
+                    # Reseta os dados.
+                    amostra.clear()
+                    amostra = []
                     contador_mensagens = 0
                     aux_contador_mensagens = 0
                     old_time = None
@@ -264,6 +332,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     ram_old = 0
                     contador_tamanho = contador_tamanho * 2
                     contador_arquivo = contador_arquivo + 1
+                    
                 time.sleep(0.3)
 
             # Teste Ack - Todos os Clientes escrevem na mesma variavel do server
@@ -283,23 +352,39 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
 
                     #Obtem o tempo da troca de dados.
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
+                    amostra.append(atraso_mensagem.total_seconds() * 1000)
+
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
                     media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
                     
-                    #Obtem a carga da CPU
                     cpu_old = carga_cpu() + cpu_old
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
-                    
-                    #Obtem a carga da Memoria RAM
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
-
+                    
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
-                    if contador_mensagens == int(numero_mensagens / 2):
-                        Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)    
+                    if contador_mensagens == (int(numero_mensagens / 2) - 1):
+                        # Cálcula diferança
+                        indice = 0
+                        while (indice < len(amostra)):
+                            amostra[indice] = (amostra[indice] - media_tempo)**2
+                            indice = indice +1
+                        # Somatório para desvio padrão.
+                        indice = 0
+                        somatorio = 0
+                        while (indice < len(amostra)):
+                            somatorio = somatorio + amostra[indice]
+                            indice = indice +1
+                        # Calcula desvio padrão.
+                        desvio_padrao = math.sqrt((somatorio / len(amostra)))
+                        # Salva os dados na planilha.
+                        Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)    
+                        # Reseta dados 
+                        amostra.clear()
+                        amostra = []
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
@@ -307,18 +392,37 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         contador_arquivo = contador_arquivo + 1
                     
                     aux_contador_mensagens = aux_contador_mensagens + 1
-                    contador_mensagens = contador_mensagens + 1 
+                    contador_mensagens = contador_mensagens + 1
                 else:
+                    print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
+                    # Cálcula diferança
+                    indice = 0
+                    while (indice < len(amostra)):
+                        amostra[indice] = (amostra[indice] - media_tempo)**2
+                        indice = indice +1
+                    # Somatório para desvio padrão.
+                    indice = 0
+                    somatorio = 0
+                    while (indice < len(amostra)):
+                        somatorio = somatorio + amostra[indice]
+                        indice = indice +1
+                    # Calcula desvio padrão.
+                    desvio_padrao = math.sqrt((somatorio / len(amostra)))
                     #Salva os dados no arquivo.
-                    Write_Excell(contador_arquivo, media_tempo, media_cpu, media_ram, contador_tamanho)
+                    Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)
+                    # Dobra a carga de envio
                     dado = dado * 2
-                    aux_contador_mensagens = 0
+                    # Reseta os dados.
+                    amostra.clear()
+                    amostra = []
                     contador_mensagens = 0
+                    aux_contador_mensagens = 0
                     old_time = None
                     cpu_old = 0
                     ram_old = 0
                     contador_tamanho = contador_tamanho * 2
                     contador_arquivo = contador_arquivo + 1
+                    
                 time.sleep(0.3)
 
             else:

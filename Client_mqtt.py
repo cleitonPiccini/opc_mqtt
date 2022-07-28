@@ -7,6 +7,7 @@ import os
 import psutil
 import xlsxwriter
 import datetime
+import math
 
 semaforo = threading.Semaphore(2)
 workbook = None
@@ -30,7 +31,7 @@ def carga_ram ():
     carga_memoria = (round((used_memory/total_memory) * 100, 2))
     return carga_memoria
 
-def Write_Excell (indice, dado_A, dado_B, dado_C, dado_D):
+def Write_Excell (indice, dado_A, dado_B, dado_C, dado_D, dado_E):
     global worksheet
                 
     #Salva os dados no arquivo.
@@ -42,6 +43,8 @@ def Write_Excell (indice, dado_A, dado_B, dado_C, dado_D):
     worksheet.write(coluna, dado_C)
     coluna = 'D'+str(indice)
     worksheet.write(coluna, dado_D)
+    coluna = 'E'+str(indice)
+    worksheet.write(coluna, dado_E)
     
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -116,17 +119,17 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
         
         # Seleciona o tipo de teste. E cria a assinatura das variaveis.
         if tipo_teste == 1:
-            nome_xlsx = "MQTT Teste Ack Cliente - " + str(numero_cliente) + ".xlsx"
+            nome_xlsx = "Dados Testes/08-07-2022 MQTT/Ack/MQTT Teste Ack Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
-            Write_Excell(1,'Tempo de ACK', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
+            Write_Excell(1,'Tempo de ACK', 'Desvio Padrão', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
             client.subscribe(topico_data)
             
         elif tipo_teste == 2:
-            nome_xlsx = "MQTT Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
+            nome_xlsx = "Dados Testes/08-07-2022 MQTT/Echo/MQTT Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet() 
-            Write_Excell(1,'Tempo de Echo', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
+            Write_Excell(1,'Tempo de Echo', 'Desvio Padrão', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
             client.subscribe(topico_echo)
 
         elif tipo_teste == 3:
@@ -185,57 +188,54 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
+                    #Write_Excell(contador_arquivo, (atraso_mensagem.total_seconds() * 1000), desvio_padrao, media_cpu, media_ram, contador_tamanho)
+                    #contador_arquivo = contador_arquivo + 1
                     
+                    '''
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == (int(numero_mensagens / 2) - 1):
-                        # Cálcula diferança
                         indice = 0
                         while (indice < len(amostra)):
                             amostra[indice] = (amostra[indice] - media_tempo)**2
                             indice = indice +1
-                        # Somatório para desvio padrão.
+
                         indice = 0
                         somatorio = 0
                         while (indice < len(amostra)):
                             somatorio = somatorio + amostra[indice]
                             indice = indice +1
-                        # Calcula desvio padrão.
+
                         desvio_padrao = math.sqrt((somatorio / len(amostra)))
-                        # Salva os dados na planilha.
-                        Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)    
-                        # Reseta dados 
                         amostra.clear()
                         amostra = []
+                        #
+                        Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)    
                         old_time = None
                         cpu_old = 0
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-                    
+                    '''
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:
                     print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
-                    # Cálcula diferança
+
                     indice = 0
                     while (indice < len(amostra)):
                         amostra[indice] = (amostra[indice] - media_tempo)**2
                         indice = indice +1
-                    # Somatório para desvio padrão.
+
                     indice = 0
                     somatorio = 0
                     while (indice < len(amostra)):
                         somatorio = somatorio + amostra[indice]
                         indice = indice +1
-                    # Calcula desvio padrão.
+
                     desvio_padrao = math.sqrt((somatorio / len(amostra)))
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)
-                    # Dobra a carga de envio
                     dado = dado * 2
-                    # Reseta os dados.
-                    amostra.clear()
-                    amostra = []
                     contador_mensagens = 0
                     aux_contador_mensagens = 0
                     old_time = None
@@ -243,6 +243,8 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     ram_old = 0
                     contador_tamanho = contador_tamanho * 2
                     contador_arquivo = contador_arquivo + 1
+                    amostra.clear()
+                    amostra = []
                     
                 time.sleep(0.3)
             
@@ -274,7 +276,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
-                    
+                    '''
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == (int(numero_mensagens / 2) - 1):
                         # Cálcula diferança
@@ -300,7 +302,7 @@ def Start(numero_cliente, end, porta, numero_mensagens, tamanho_inicio, tamanho_
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-                    
+                    '''
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:

@@ -230,12 +230,13 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
                     amostra.append(atraso_mensagem.total_seconds() * 1000)
 
+                    """
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
                     media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
-                    
+                    """
                     cpu_old = carga_cpu() + cpu_old
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     ram_old = carga_ram() + ram_old
@@ -273,17 +274,25 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                 else:
                     print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
 
-                    indice = 0
-                    while (indice < len(amostra)):
-                        amostra[indice] = (amostra[indice] - media_tempo)**2
-                        indice = indice +1
-
+                    # Cálculo da média.
                     indice = 0
                     somatorio = 0
                     while (indice < len(amostra)):
                         somatorio = somatorio + amostra[indice]
                         indice = indice +1
-
+                    media_tempo = somatorio / len(amostra)
+                    # Cálculo 
+                    indice = 0
+                    while (indice < len(amostra)):
+                        amostra[indice] = (amostra[indice] - media_tempo)**2
+                        indice = indice +1
+                    # Cálculo
+                    indice = 0
+                    somatorio = 0
+                    while (indice < len(amostra)):
+                        somatorio = somatorio + amostra[indice]
+                        indice = indice +1
+                    # Cálculo de desvio padrão.
                     desvio_padrao = math.sqrt((somatorio / len(amostra)))
                     #Salva os dados no arquivo.
                     Write_Excell(contador_arquivo, media_tempo, desvio_padrao, media_cpu, media_ram, contador_tamanho)
@@ -320,13 +329,14 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     #Obtem o tempo da troca de dados.
                     atraso_mensagem = datetime.datetime.now() - Inicio_Timer
                     amostra.append(atraso_mensagem.total_seconds() * 1000)
-
+                    
+                    """
                     if old_time == None :
                         old_time = atraso_mensagem
                     else:    
                         old_time = atraso_mensagem + old_time
                     media_tempo = ((old_time.total_seconds() * 1000) / (aux_contador_mensagens + 1))
-                    
+                    """
                     cpu_old = carga_cpu() + cpu_old
                     media_cpu = cpu_old / (aux_contador_mensagens + 1)
                     ram_old = carga_ram() + ram_old
@@ -363,6 +373,14 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     contador_mensagens = contador_mensagens + 1
                 else:
                     print("Trocou o tamanho = ", contador_tamanho, "Cliente = ", numero_cliente)
+                    
+                    # Cálculo da média.
+                    indice = 0
+                    somatorio = 0
+                    while (indice < len(amostra)):
+                        somatorio = somatorio + amostra[indice]
+                        indice = indice +1
+                    media_tempo = somatorio / len(amostra)
                     # Cálcula diferança
                     indice = 0
                     while (indice < len(amostra)):

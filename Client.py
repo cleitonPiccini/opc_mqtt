@@ -243,6 +243,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     #Write_Excell(contador_arquivo, (atraso_mensagem.total_seconds() * 1000), desvio_padrao, media_cpu, media_ram, contador_tamanho)
                     #contador_arquivo = contador_arquivo + 1
                     
+                    """
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == (int(numero_mensagens / 2) - 1):
                         indice = 0
@@ -266,7 +267,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-                    
+                    """
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:
@@ -331,6 +332,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
                     
+                    """
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == (int(numero_mensagens / 2) - 1):
                         # Cálcula diferança
@@ -356,7 +358,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-                    
+                    """
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:
@@ -420,6 +422,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                     ram_old = carga_ram() + ram_old
                     media_ram = ram_old / (aux_contador_mensagens + 1)
                     
+                    """
                     #Salva os dados no arquivo. Salva quando o teste estiver na metade das mensagens.
                     if contador_mensagens == (int(numero_mensagens / 2) - 1):
                         # Cálcula diferança
@@ -445,7 +448,7 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
                         ram_old = 0
                         aux_contador_mensagens = -1
                         contador_arquivo = contador_arquivo + 1
-                    
+                    """
                     aux_contador_mensagens = aux_contador_mensagens + 1
                     contador_mensagens = contador_mensagens + 1
                 else:

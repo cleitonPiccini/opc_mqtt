@@ -7,7 +7,7 @@ Porta :
 Nome URI:
 Teste Servidor
 Número de mensagens até dobrar o tamanho:
-50
+10
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):

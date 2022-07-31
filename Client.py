@@ -162,20 +162,20 @@ def Start(numero_cliente, endpoint, uri, numero_mensagens, tamanho_inicio, taman
         
         #Cria a assinatura das variaveis.
         handler = SubHandler()
-        sub = client.create_subscription(1, handler)        
+        sub = client.create_subscription(0, handler)        
         method_ack = objects.get_children()[2]
         method_echo = objects.get_children()[3]
 
         # Seleciona o tipo de teste.
         if tipo_teste == 1:
-            nome_xlsx = "Dados Testes/27-07-2022 OPC/Ack/Teste Ack Cliente - " + str(numero_cliente) + ".xlsx"
+            nome_xlsx = "Dados Testes/31-07-2022 OPC/Ack/Teste Ack Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet()
             Write_Excell(1,'Tempo de ACK', 'Desvio Padrão', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')
             handle = sub.subscribe_data_change(Data_Cliente)            
             
         elif tipo_teste == 2:
-            nome_xlsx = "Dados Testes/27-07-2022 OPC/Echo/Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
+            nome_xlsx = "Dados Testes/31-07-2022 OPC/Echo/Teste Echo Cliente - " + str(numero_cliente) + ".xlsx"
             workbook = xlsxwriter.Workbook(nome_xlsx) 
             worksheet = workbook.add_worksheet()
             Write_Excell(1,'Tempo de Echo', 'Desvio Padrão', 'Carga Processador', 'Carga Memoria RAM', 'Tamanho do dado')

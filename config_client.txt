@@ -1,5 +1,5 @@
 Número de clientes gerados:
-20
+15
 Endereço IP do Servidor:
 169.254.84.106
 Porta :
@@ -7,7 +7,7 @@ Porta :
 Nome URI:
 Teste Servidor
 Número de mensagens até dobrar o tamanho:
-5000
+50
 Tamanho inicio (em bytes):
 2
 Tamanho final (em bytes):
